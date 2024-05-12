@@ -33,6 +33,7 @@ function App() {
   const [user_id, setUserId] = useState(null);
   const [country, setCountry] = useState(null); //Country code for generating recommended tracks
   const [playlist_id, setPlaylistId] = useState(null); //Playlist ID for adding tracks to playlist
+  const [genres, setGenres] = useState(null); //Possible genres to create dropdown menu for users to select
 
   /*
     Attempt to get token every time page rerenders, which occurs when
@@ -51,6 +52,7 @@ function App() {
   useEffect(() => {
     if (token) {
       getIdCountry();
+      getGenres();
     }
   }, [token]);
 
@@ -64,6 +66,19 @@ function App() {
       .then(data => {
         setUserId(data.id);
         setCountry(data.country);
+      });
+  }
+
+  const getGenres = async () => {
+    fetch('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        setGenres(data);
+        console.log(data);
       });
   }
 
@@ -91,7 +106,7 @@ function App() {
         setPlaylistId(data.id);
         console.log('Playlist ID:', data.id);
       });
-  }
+  } 
 
   return (
     <div className="App">
