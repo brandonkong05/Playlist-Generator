@@ -111,9 +111,9 @@ function App() {
   /*Get Recommendation - For now I set the genres to classical but
   later on when the frontend website is done with a thing for the user
   to input genre parameters we can use that value but we have to see it is 
-  a valid input by seeing if it exist in the genres varaible which has 
-  all the avalibale genres that can be search in spotify. I'm only 
-  searching with genres right now but we can add more parameters later
+  a valid input by seeing if it exist in the genres variable which has 
+  all the available genres that can be search in spotify. I'm only 
+  searching with genres and current country right now but we can add more parameters later
   if we want such as artist and danceability.
   */
   const getRecommendation = async () => {
