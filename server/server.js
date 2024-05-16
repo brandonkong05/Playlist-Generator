@@ -33,6 +33,7 @@ app.post('/create-empty-playlist', async (req, res) => {
         });
 })
 
+//can add more parameter later
 app.post('/recommendations', async (req, res) => {
     const {token, country, genre} = req.body;
     await fetch(`https://api.spotify.com/v1/recommendations?market=${country}&seed_genres=${genre}`, {
