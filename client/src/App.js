@@ -109,7 +109,7 @@ function App() {
   } 
 
   /*Get Recommendation - For now I set the genres to classical but
-  later on when the frontend websie is done with a thing for the user
+  later on when the frontend website is done with a thing for the user
   to input genre parameters we can use that value but we have to see it is 
   a valid input by seeing if it exist in the genres varaible which has 
   all the avalibale genres that can be search in spotify. I'm only 
