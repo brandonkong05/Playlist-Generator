@@ -4,7 +4,7 @@ import './App.css';
 const auth_endpoint = 'https://accounts.spotify.com/authorize';
 const client_id = '77bb375aeb0d4d6ca9789cb98880c41b';
 const redirect_uri = 'http://localhost:3001/callback';
-const scope = ['playlist-modify-private', 'playlist-modify-public']
+const scope = ['playlist-modify-private', 'playlist-modify-public', 'user-read-private']
 
 /* 
   In order to access the Spotify web API, you need an access token.
@@ -108,6 +108,30 @@ function App() {
       });
   } 
 
+  /*Get Recommendation - For now I set the genres to classical but
+  later on when the frontend websie is done with a thing for the user
+  to input genre parameters we can use that value but we have to see it is 
+  a valid input by seeing if it exist in the genres varaible which has 
+  all the avalibale genres that can be search in spotify. I'm only 
+  searching with genres right now but we can add more parameters later
+  if we want such as artist and danceability.
+  */
+  const getRecommendation = async () => {
+    fetch('http://localhost:3000/recommendations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      //can change later of genre to user input genre later, set it as classical
+      //for testing purpose only
+      body: JSON.stringify({token: token, country: country, genre: "classical"})
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+      });
+  } 
+
   return (
     <div className="App">
       {!token && (
@@ -117,6 +141,7 @@ function App() {
         <div>
           <div>Successful login. Token = {token}</div>
           <button onClick={() => createEmptyPlaylist()}>Create Playlist</button>
+          <button onClick={() => getRecommendation()}>Button To Test If Recommendation Endpoint Work</button>
         </div>
       )}
     </div>
