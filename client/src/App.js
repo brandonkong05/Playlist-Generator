@@ -1,6 +1,11 @@
 import {useEffect, useState} from "react";
 import './App.css';
 
+import Navbar from './Navbar.js';
+import Hero from './Hero.js';
+import Main from './Main.js';
+import PlaylistCard from './PlaylistCard.js';
+
 const auth_endpoint = 'https://accounts.spotify.com/authorize';
 const client_id = '77bb375aeb0d4d6ca9789cb98880c41b';
 const redirect_uri = 'http://localhost:3001/callback';
@@ -129,20 +134,48 @@ function App() {
       .then(response => response.json())
       .then(data => {
         console.log(data);
+        addTracksToPlaylist(data.tracks);
       });
   } 
 
+  const addTracksToPlaylist = async (tracks) => {
+    fetch('http://localhost:3000/api/spotify/add-tracks-to-playlist', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: token, playlist_id: playlist_id, tracks: tracks })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Tracks added successfully');
+      });
+  }
+
+  const handleCreatePlaylist = async () => {
+    const name = prompt("Enter playlist name:");
+    await createEmptyPlaylist(name);
+    const genre = prompt("Enter genre:");
+    const danceability = prompt("Enter danceability (0 to 1):");
+    await getRecommendation(genre, danceability);
+  }
+
   return (
     <div className="App">
+      <Navbar />
+      <Hero />
       {!token && (
-        <a href={`${auth_endpoint}?client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope.join("%20")}&response_type=token&show_dialog=true`}>Log in to Spotify</a>
+        <a href={`${auth_endpoint}?client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${scope.join("%20")}&response_type=token&show_dialog=true`}>
+          Log in to Spotify
+        </a>
       )}
       {token && (
-        <div>
+        <Main>
           <div>Successful login. Token = {token}</div>
-          <button onClick={() => createEmptyPlaylist()}>Create Playlist</button>
-          <button onClick={() => getRecommendation()}>Button To Test If Recommendation Endpoint Work</button>
-        </div>
+          <button onClick={handleCreatePlaylist}>Create Playlist</button>
+          <button onClick={() => getRecommendation('classical', 0.5)}>Get Recommendations</button>
+          <PlaylistCard />
+        </Main>
       )}
     </div>
   );
