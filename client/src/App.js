@@ -40,7 +40,7 @@ function App() {
   const limit = 20;
   let playlist_id; //Playlist ID for adding tracks to playlist
   const country = "US";
-  const [genre, setGenre] = useState("classical");
+  const [genre, setGenre] = useState("Enter genre in lowercase");
   const [target_acousticness, setAcousticness] = useState(0.5);
   const [target_danceability, setDanceability] = useState(0.5);
   const [target_energy, setEnergy] = useState(0.5);
@@ -50,6 +50,24 @@ function App() {
   const [target_valence, setValence] = useState(0.5); //How positive/negative a song is emotionally
 
   const [playlists, setPlaylists] = useState([]) //For displaying playlists
+
+  // possible genre
+  const genreArray =[
+    "acoustic","afrobeat","alt-rock","alternative","ambient","anime","black-metal","bluegrass","blues",
+    "bossanova","brazil","breakbeat","british","cantopop","chicago-house","children","chill","classical",
+    "club","comedy","country","dance","dancehall","death-metal","deep-house","detroit-techno","disco",
+    "disney","drum-and-bass","dub","dubstep","edm","electro","electronic","emo","folk","forro","french",
+    "funk","garage","german","gospel","goth","grindcore","groove","grunge","guitar",
+    "happy","hard-rock","hardcore","hardstyle","heavy-metal","hip-hop","holidays","honky-tonk","house",
+    "idm","indian","indie","indie-pop","industrial","iranian","j-dance","j-idol","j-pop","j-rock",
+    "jazz","k-pop","kids","latin","latino","malay","mandopop","metal","metal-misc","metalcore",
+    "minimal-techno","movies","mpb","new-age","new-release","opera","pagode","party","philippines-opm",
+    "piano","pop","pop-film","post-dubstep","power-pop","progressive-house","psych-rock","punk",
+    "punk-rock","r-n-b","rainy-day","reggae","reggaeton","road-trip","rock","rock-n-roll","rockabilly",
+    "romance","sad","salsa","samba","sertanejo","show-tunes","singer-songwriter","ska","sleep","songwriter",
+    "soul","soundtracks","spanish","study","summer","swedish","synth-pop","tango","techno","trance",
+    "trip-hop","turkish","work-out","world-music"
+  ];
 
   /*
     Attempt to get token every time page rerenders, which occurs when
@@ -74,7 +92,7 @@ function App() {
   //Set playlist parameters back to defaults whenever a new one is created
   useEffect(() => {
     setPlaylistName("New Playlist");
-    setGenre("classical");
+    setGenre("Enter genre in lowercase");
     setAcousticness(0.5);
     setDanceability(0.5);
     setEnergy(0.5);
@@ -158,8 +176,13 @@ function App() {
   }
 
   const handleCreatePlaylist = async () => {
-    await createEmptyPlaylist();
-    await getRecommendations();
+    if(genreArray.includes(genre)){
+      await createEmptyPlaylist();
+      await getRecommendations();
+    }
+    else{
+      setGenre("Enter a valid spotify genre")
+    }
   }
 
   return (
