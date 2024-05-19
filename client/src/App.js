@@ -35,10 +35,24 @@ const getLoginInfo = () => {
 
 function App() {
   const [token, setToken] = useState(null);
+  
   const [user_id, setUserId] = useState(null);
-  const [country, setCountry] = useState(null); //Country code for generating recommended tracks
+  const [playlistName, setPlaylistName] = useState("New Playlist");
+
   const [playlist_id, setPlaylistId] = useState(null); //Playlist ID for adding tracks to playlist
-  const [genres, setGenres] = useState(null); //Possible genres to create dropdown menu for users to select
+  const [limit, setLimit] = useState(20); //Number of tracks to add to playlist
+  const country = "US";
+  const [genre, setGenre] = useState("classical");
+  const [target_acousticness, setAcousticness] = useState(0.5);
+  const [target_danceability, setDanceability] = useState(0.5);
+  const [target_energy, setEnergy] = useState(0.5);
+  const [target_instrumentalness, setInstrumentalness] = useState(0.5);
+  const [target_loudness, setLoudness] = useState(0.5); 
+  const [target_mode, setMode] = useState(0.5); //How major or minor a song is
+  const [target_tempo, setTempo] = useState(60);
+  const [target_valence, setValence] = useState(0.5); //How positive/negative a song is emotionally
+
+  const [playlists, setPlaylists] = useState([]) //For displaying playlists
 
   /*
     Attempt to get token every time page rerenders, which occurs when
@@ -56,12 +70,26 @@ function App() {
   //Get necessary user info for playlist creation once token is retrieved
   useEffect(() => {
     if (token) {
-      getIdCountry();
-      getGenres();
+      getId();
     }
   }, [token]);
 
-  const getIdCountry = async () => {
+  //Set playlist parameters back to defaults whenever a new one is created
+  useEffect(() => {
+    setPlaylistName("New Playlist");
+    setLimit(20);
+    setGenre("classical");
+    setAcousticness(0.5);
+    setDanceability(0.5);
+    setEnergy(0.5);
+    setInstrumentalness(0.5);
+    setLoudness(0.5);
+    setMode(0.5);
+    setTempo(60);
+    setValence(0.5);
+  }, [playlists])
+
+  const getId = async () => {
     fetch('https://api.spotify.com/v1/me', {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -70,20 +98,6 @@ function App() {
       .then(response => response.json())
       .then(data => {
         setUserId(data.id);
-        setCountry(data.country);
-      });
-  }
-
-  const getGenres = async () => {
-    fetch('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        setGenres(data);
-        console.log(data);
       });
   }
 
@@ -93,58 +107,53 @@ function App() {
       - Getting recommended tracks based on user's parameters
       - Adding each track to the empty playlist
   */
-  /*
-    CURRENTLY PLAYLIST IS DEFAULT NAMED 'New Playlist'
-    MAYBE ALLOW USER TO ENTER DESIRED NAME IN WHICH CASE NAME
-    NEEDS TO BE A PARAM IN createEmptyPlaylist
-  */
   const createEmptyPlaylist = async () => {
     fetch('http://localhost:3000/create-empty-playlist', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({token: token, user_id: user_id, name: 'New Playlist'})
+      body: JSON.stringify({token: token, user_id: user_id, name: playlistName})
     })
       .then(response => response.json())
       .then(data => {
         setPlaylistId(data.id);
-        console.log('Playlist ID:', data.id);
+        console.log('Playlist ID:', playlist_id);
       });
   } 
 
-  /*Get Recommendation - For now I set the genres to classical but
-  later on when the frontend website is done with a thing for the user
-  to input genre parameters we can use that value but we have to see it is 
-  a valid input by seeing if it exist in the genres variable which has 
-  all the available genres that can be search in spotify. I'm only 
-  searching with genres and current country right now but we can add more parameters later
-  if we want such as artist and danceability.
-  */
-  const getRecommendation = async () => {
-    fetch('http://localhost:3000/recommendations', {
+  //Gets recommended tracks, adds tracks to empty playlist, and saves info on new playlist (currently name and number of tracks) for display
+  const getRecommendations = async () => {
+    let links = [];
+    fetch('http://localhost:3000/get-recommendations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      //can change later of genre to user input genre later, set it as classical
-      //for testing purpose only
-      body: JSON.stringify({token: token, country: country, genre: "classical"})
+      body: JSON.stringify({token: token, limit: limit, country: country, genre: genre, target_acousticness: target_acousticness, target_danceability: target_danceability, target_energy: target_energy, target_instrumentalness: target_instrumentalness, target_loudness: target_loudness, target_mode: target_mode, target_tempo: target_tempo, target_valence: target_valence})
     })
       .then(response => response.json())
       .then(data => {
         console.log(data);
-        addTracksToPlaylist(data.tracks);
-      });
+        data.tracks.map(track => links.push(track.uri));
+        const JSONuris = {
+          uris: links
+        }
+        console.log(JSON.stringify(JSONuris));
+        addTracksToPlaylist(JSONuris);
+      })
+      .then(console.log(links))
+      .then(setPlaylists(oldPlaylists => [...oldPlaylists, {name: playlistName, num_tracks: limit}]))
+      .then(console.log(playlists));
   } 
-
-  const addTracksToPlaylist = async (tracks) => {
-    fetch('http://localhost:3000/api/spotify/add-tracks-to-playlist', {
+  
+  const addTracksToPlaylist = async (uris) => {
+    fetch('http://localhost:3000/add-tracks-to-playlist', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ token: token, playlist_id: playlist_id, tracks: tracks })
+      body: JSON.stringify({ token: token, playlist_id: playlist_id, uris: uris })
     })
       .then(response => response.json())
       .then(data => {
@@ -153,11 +162,8 @@ function App() {
   }
 
   const handleCreatePlaylist = async () => {
-    const name = prompt("Enter playlist name:");
-    await createEmptyPlaylist(name);
-    const genre = prompt("Enter genre:");
-    const danceability = prompt("Enter danceability (0 to 1):");
-    await getRecommendation(genre, danceability);
+    await createEmptyPlaylist();
+    await getRecommendations();
   }
 
   return (
@@ -170,13 +176,9 @@ function App() {
         </a>
       )}
       {token && (
-        <Main>
-          <div>Successful login. Token = {token}</div>
-          <button onClick={handleCreatePlaylist}>Create Playlist</button>
-          <button onClick={() => getRecommendation('classical', 0.5)}>Get Recommendations</button>
-          <PlaylistCard />
-        </Main>
+        <Main token={token} playlistName={playlistName} setPlaylistName={setPlaylistName} limit={limit} setLimit={setLimit} genre={genre} setGenre={setGenre} target_acousticness={target_acousticness} setAcousticness={setAcousticness} target_danceability={target_danceability} setDanceability={setDanceability} target_energy={target_energy} setEnergy={setEnergy} target_instrumentalness={target_instrumentalness} setInstrumentalness={setInstrumentalness} target_loudness={target_loudness} setLoudness={setLoudness} target_mode={target_mode} setMode={setMode} target_tempo={target_tempo} setTempo={setTempo} target_valence={target_valence} setValence={setValence} handleCreatePlaylist={handleCreatePlaylist} />
       )}
+      <PlaylistCard playlists={playlists} />
     </div>
   );
 }

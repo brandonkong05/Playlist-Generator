@@ -34,14 +34,30 @@ app.post('/create-empty-playlist', async (req, res) => {
 })
 
 //can add more parameter later
-app.post('/recommendations', async (req, res) => {
-    const {token, country, genre} = req.body;
-    await fetch(`https://api.spotify.com/v1/recommendations?market=${country}&seed_genres=${genre}`, {
+app.post('/get-recommendations', async (req, res) => {
+    const {token, limit, country, genre, target_acousticness, target_danceability, target_energy, target_instrumentalness, target_loudness, target_mode, target_tempo, target_valence} = req.body;
+    await fetch(`https://api.spotify.com/v1/recommendations?limit=${limit}&market=${country}&seed_genres=${genre}&target_acousticness=${target_acousticness}&target_danceability=${target_danceability}&target_energy=${target_energy}&target_instrumentalness=${target_instrumentalness}&target_loudness=${target_loudness}&target_mode=${target_mode}&target_tempo=${target_tempo}&target_valence=${target_valence}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         },
+    })
+        .then(response => response.json())
+        .then(data => {
+            res.send(data)
+        });
+})
+
+app.post('/add-tracks-to-playlist', async (req, res) => {
+    const {token, playlist_id, uris} = req.body;
+    await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}/tracks`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({uris: uris, position: 0})
     })
         .then(response => response.json())
         .then(data => {

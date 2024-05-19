@@ -1,10 +1,13 @@
 import React from 'react';
 
-const PlaylistCard = ({ name, tracks }) => (
-    <div className="playlist-card">
-        <h3>{name}</h3>
-        <p>Tracks: {tracks.length}</p>
-    </div>
-);
+function PlaylistCard({ playlists }) {
+    //LOOP THRU PLAYLISTS
+    //Each item is an object {name, num_tracks}
+    //Display both for each playlist 
+    return (
+        <div className="playlist-cards">
+        </div>
+    )
+};
 
 export default PlaylistCard;
