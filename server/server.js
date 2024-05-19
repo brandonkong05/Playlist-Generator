@@ -35,8 +35,12 @@ app.post('/create-empty-playlist', async (req, res) => {
 
 //can add more parameter later
 app.post('/get-recommendations', async (req, res) => {
-    const {token, limit, country, genre, target_acousticness, target_danceability, target_energy, target_instrumentalness, target_loudness, target_mode, target_tempo, target_valence} = req.body;
-    await fetch(`https://api.spotify.com/v1/recommendations?limit=${limit}&market=${country}&seed_genres=${genre}&target_acousticness=${target_acousticness}&target_danceability=${target_danceability}&target_energy=${target_energy}&target_instrumentalness=${target_instrumentalness}&target_loudness=${target_loudness}&target_mode=${target_mode}&target_tempo=${target_tempo}&target_valence=${target_valence}`, {
+    const {token, country, genre, target_acousticness, target_danceability, target_energy, target_instrumentalness, target_loudness, target_tempo, target_valence} = req.body;
+    await fetch(`https://api.spotify.com/v1/recommendations?
+    &market=${country}&seed_genres=${genre}&target_acousticness=${target_acousticness}
+    &target_danceability=${target_danceability}&target_energy=${target_energy}
+    &target_instrumentalness=${target_instrumentalness}&target_loudness=${target_loudness}
+    &target_tempo=${target_tempo}&target_valence=${target_valence}`, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -57,7 +61,7 @@ app.post('/add-tracks-to-playlist', async (req, res) => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({uris: uris, position: 0})
+        body: JSON.stringify(uris)
     })
         .then(response => response.json())
         .then(data => {

@@ -35,12 +35,10 @@ const getLoginInfo = () => {
 
 function App() {
   const [token, setToken] = useState(null);
-  
   const [user_id, setUserId] = useState(null);
   const [playlistName, setPlaylistName] = useState("New Playlist");
-
-  const [playlist_id, setPlaylistId] = useState(null); //Playlist ID for adding tracks to playlist
-  const [limit, setLimit] = useState(20); //Number of tracks to add to playlist
+  const limit = 20;
+  let playlist_id; //Playlist ID for adding tracks to playlist
   const country = "US";
   const [genre, setGenre] = useState("classical");
   const [target_acousticness, setAcousticness] = useState(0.5);
@@ -48,7 +46,6 @@ function App() {
   const [target_energy, setEnergy] = useState(0.5);
   const [target_instrumentalness, setInstrumentalness] = useState(0.5);
   const [target_loudness, setLoudness] = useState(0.5); 
-  const [target_mode, setMode] = useState(0.5); //How major or minor a song is
   const [target_tempo, setTempo] = useState(60);
   const [target_valence, setValence] = useState(0.5); //How positive/negative a song is emotionally
 
@@ -77,14 +74,12 @@ function App() {
   //Set playlist parameters back to defaults whenever a new one is created
   useEffect(() => {
     setPlaylistName("New Playlist");
-    setLimit(20);
     setGenre("classical");
     setAcousticness(0.5);
     setDanceability(0.5);
     setEnergy(0.5);
     setInstrumentalness(0.5);
     setLoudness(0.5);
-    setMode(0.5);
     setTempo(60);
     setValence(0.5);
   }, [playlists])
@@ -117,8 +112,7 @@ function App() {
     })
       .then(response => response.json())
       .then(data => {
-        setPlaylistId(data.id);
-        console.log('Playlist ID:', playlist_id);
+        playlist_id = data.id;
       });
   } 
 
@@ -130,24 +124,25 @@ function App() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({token: token, limit: limit, country: country, genre: genre, target_acousticness: target_acousticness, target_danceability: target_danceability, target_energy: target_energy, target_instrumentalness: target_instrumentalness, target_loudness: target_loudness, target_mode: target_mode, target_tempo: target_tempo, target_valence: target_valence})
+      body: JSON.stringify(
+        {token: token, country: country, genre: genre, 
+          target_acousticness: target_acousticness, 
+          target_danceability: target_danceability, target_energy: target_energy, 
+          target_instrumentalness: target_instrumentalness, target_loudness: target_loudness, 
+          target_tempo: target_tempo, target_valence: target_valence})
     })
       .then(response => response.json())
       .then(data => {
-        console.log(data);
         data.tracks.map(track => links.push(track.uri));
         const JSONuris = {
           uris: links
         }
-        console.log(JSON.stringify(JSONuris));
-        addTracksToPlaylist(JSONuris);
+        addTracksToPlaylist(token, playlist_id, JSONuris);
+        setPlaylists(oldPlaylists => [...oldPlaylists, {name: playlistName, num_tracks: limit}])
       })
-      .then(console.log(links))
-      .then(setPlaylists(oldPlaylists => [...oldPlaylists, {name: playlistName, num_tracks: limit}]))
-      .then(console.log(playlists));
   } 
   
-  const addTracksToPlaylist = async (uris) => {
+  const addTracksToPlaylist = async (token, playlist_id, uris) => {
     fetch('http://localhost:3000/add-tracks-to-playlist', {
       method: 'POST',
       headers: {
@@ -157,6 +152,7 @@ function App() {
     })
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         console.log('Tracks added successfully');
       });
   }
@@ -176,7 +172,13 @@ function App() {
         </a>
       )}
       {token && (
-        <Main token={token} playlistName={playlistName} setPlaylistName={setPlaylistName} limit={limit} setLimit={setLimit} genre={genre} setGenre={setGenre} target_acousticness={target_acousticness} setAcousticness={setAcousticness} target_danceability={target_danceability} setDanceability={setDanceability} target_energy={target_energy} setEnergy={setEnergy} target_instrumentalness={target_instrumentalness} setInstrumentalness={setInstrumentalness} target_loudness={target_loudness} setLoudness={setLoudness} target_mode={target_mode} setMode={setMode} target_tempo={target_tempo} setTempo={setTempo} target_valence={target_valence} setValence={setValence} handleCreatePlaylist={handleCreatePlaylist} />
+        <Main token={token} playlistName={playlistName} setPlaylistName={setPlaylistName}
+        genre={genre} setGenre={setGenre} target_acousticness={target_acousticness} setAcousticness={setAcousticness} 
+        target_danceability={target_danceability} setDanceability={setDanceability} target_energy={target_energy} 
+        setEnergy={setEnergy} target_instrumentalness={target_instrumentalness} setInstrumentalness={setInstrumentalness} 
+        target_loudness={target_loudness} setLoudness={setLoudness} 
+        target_tempo={target_tempo} setTempo={setTempo} target_valence={target_valence} 
+        setValence={setValence} handleCreatePlaylist={handleCreatePlaylist} />
       )}
       <PlaylistCard playlists={playlists} />
     </div>

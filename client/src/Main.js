@@ -1,12 +1,8 @@
 import React from 'react';
 
-function Main({ token, playlistName, setPlaylistName, limit, setLimit, genre, setGenre, target_acousticness, setAcousticness, target_danceability, setDanceability, target_energy, setEnergy, target_instrumentalness, setInstrumentalness, target_loudness, setLoudness, target_mode, setMode, target_tempo, setTempo, target_valence, setValence, handleCreatePlaylist }) {
+function Main({ token, playlistName, setPlaylistName, genre, setGenre, target_acousticness, setAcousticness, target_danceability, setDanceability, target_energy, setEnergy, target_instrumentalness, setInstrumentalness, target_loudness, setLoudness, target_tempo, setTempo, target_valence, setValence, handleCreatePlaylist }) {
     const handleName = (event) => {
         setPlaylistName(event.target.value);
-    }
-
-    const handleLimit = (event) => {
-        setLimit(event.target.value);
     }
 
     const handleAcousticness = (event) => {
@@ -27,10 +23,6 @@ function Main({ token, playlistName, setPlaylistName, limit, setLimit, genre, se
 
     const handleLoudness = (event) => {
         setLoudness(event.target.value);
-    }
-
-    const handleMode = (event) => {
-        setMode(event.target.value);
     }
 
     const handleTempo = (event) => {
@@ -183,13 +175,11 @@ function Main({ token, playlistName, setPlaylistName, limit, setLimit, genre, se
         <div className="main">
             <div className="controls">
                     <input type="text" value={playlistName} onChange={handleName} />
-                    <input type="range" min="0" max="100" value={limit} onChange={handleLimit} />
                     <input type="range" min="0" max="1" step="0.01" value={target_acousticness} onChange={handleAcousticness} />
                     <input type="range" min="0" max="1" step="0.01" value={target_danceability} onChange={handleDanceability} />
                     <input type="range" min="0" max="1" step="0.01" value={target_energy} onChange={handleEnergy} />
                     <input type="range" min="0" max="1" step="0.01" value={target_instrumentalness} onChange={handleInstrumentalness} />
                     <input type="range" min="0" max="1" step="0.01" value={target_loudness} onChange={handleLoudness} />
-                    <input type="range" min="0" max="1" step="0.01" value={target_mode} onChange={handleMode} />
                     <input type="range" min="0" max="200" step="0.1" value={target_tempo} onChange={handleTempo} />
                     <input type="range" min="0" max="1" step="0.01" value={target_valence} onChange={handleValence} />
                     <button onClick={handleCreatePlaylist}>Create Playlist</button>
