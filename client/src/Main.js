@@ -30,7 +30,7 @@ function Main({ token, playlistName, setPlaylistName, genre, setGenre, target_ac
             </label>
             <label>
               Loudness:
-              <input type="range" min="0" max="1" step="0.01" value={target_loudness} onChange={(e) => setLoudness(e.target.value)} />
+              <input type="range" min="-60" max="0" step="0.01" value={target_loudness} onChange={(e) => setLoudness(e.target.value)} />
             </label>
             <label>
               Tempo:
@@ -42,14 +42,8 @@ function Main({ token, playlistName, setPlaylistName, genre, setGenre, target_ac
             </label>
             <button onClick={handleCreatePlaylist}>Create Playlist</button>
           </div>
-          <div className="playlist-cards">
-          </div>
         </div>
       );
     }
 
 export default Main;
-
-/*
-
-*/

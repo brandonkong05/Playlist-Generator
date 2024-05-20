@@ -33,7 +33,6 @@ app.post('/create-empty-playlist', async (req, res) => {
         });
 })
 
-//can add more parameter later
 app.post('/get-recommendations', async (req, res) => {
     const {token, country, genre, target_acousticness, target_danceability, target_energy, target_instrumentalness, target_loudness, target_tempo, target_valence} = req.body;
     await fetch(`https://api.spotify.com/v1/recommendations?

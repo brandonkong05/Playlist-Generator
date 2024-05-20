@@ -45,13 +45,13 @@ function App() {
   const [target_danceability, setDanceability] = useState(0.5);
   const [target_energy, setEnergy] = useState(0.5);
   const [target_instrumentalness, setInstrumentalness] = useState(0.5);
-  const [target_loudness, setLoudness] = useState(0.5); 
+  const [target_loudness, setLoudness] = useState(-30.5); 
   const [target_tempo, setTempo] = useState(60);
   const [target_valence, setValence] = useState(0.5); //How positive/negative a song is emotionally
 
   const [playlists, setPlaylists] = useState([]) //For displaying playlists
 
-  // possible genre
+  // Possible genres
   const genreArray =[
     "acoustic","afrobeat","alt-rock","alternative","ambient","anime","black-metal","bluegrass","blues",
     "bossanova","brazil","breakbeat","british","cantopop","chicago-house","children","chill","classical",
@@ -70,8 +70,7 @@ function App() {
   ];
 
   /*
-    Attempt to get token every time page rerenders, which occurs when
-    you are redirected back from the Spotify login page
+    Attempt to get token upon first render
   */
   useEffect(() => {
     const login_info = getLoginInfo();
@@ -97,7 +96,7 @@ function App() {
     setDanceability(0.5);
     setEnergy(0.5);
     setInstrumentalness(0.5);
-    setLoudness(0.5);
+    setLoudness(-30.5);
     setTempo(60);
     setValence(0.5);
   }, [playlists])
