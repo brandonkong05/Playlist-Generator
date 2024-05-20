@@ -1,48 +1,12 @@
 import React from 'react';
 
 function Main({ token, playlistName, setPlaylistName, genre, setGenre, target_acousticness, setAcousticness, target_danceability, setDanceability, target_energy, setEnergy, target_instrumentalness, setInstrumentalness, target_loudness, setLoudness, target_tempo, setTempo, target_valence, setValence, handleCreatePlaylist }) {
-    const handleName = (event) => {
-        setPlaylistName(event.target.value);
-    }
-
-    const handleAcousticness = (event) => {
-        setAcousticness(event.target.value);
-    }
-
-    const handleDanceability = (event) => {
-        setDanceability(event.target.value);
-    }
-
-    const handleEnergy = (event) => {
-        setEnergy(event.target.value);
-    }
-
-    const handleInstrumentalness = (event) => {
-        setInstrumentalness(event.target.value);
-    }
-
-    const handleLoudness = (event) => {
-        setLoudness(event.target.value);
-    }
-
-    const handleTempo = (event) => {
-        setTempo(event.target.value);
-    }
-
-    const handleValence = (event) => {
-        setValence(event.target.value);
-    }
-    
-    const handleGenre = (event) => {
-        setGenre(event.target.value);
-    }
-
     return (
         <div className="main">
           <div className="controls">
             <label>
               Playlist Name:
-              <input type="text" value={playlistName} onChange={(e) => setPlaylistName(e.target.value)} />
+            <input type="text" value={playlistName} onChange={(e) => setPlaylistName(e.target.value)} />
             </label>
             <label>
               Genre:
