@@ -5,7 +5,7 @@ function PlaylistCard({ playlists }) {
     //Each item is an object {name, num_tracks}
     //Display both for each playlist 
     const map = playlists.map(playlists => 
-        <div style={{marginTop: 5}}>
+        <div style={{marginTop: 5, marginBottom: 10}}>
             <div> Playlist Name: {playlists.name }</div>
             <div> Track Numbers: {playlists.num_tracks}</div>
             <div> Playlist Successfully Created. Check Spotify</div>
